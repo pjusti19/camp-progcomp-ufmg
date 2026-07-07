@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from common.codeforces.client import handle_exists
 
 User = get_user_model()
 
@@ -17,7 +18,7 @@ def register_user(*, name: str, codeforces_handle: str, email: str, password: st
     if User.objects.filter(email=email).exists():
         raise SignupError("Email já cadastrado.")
     
-    if not validateHandle(codeforces_handle):
+    if not handle_exists(codeforces_handle):
         raise SignupError("Handle do Codeforces inválido.")
     
     return User.objects.create_user(
