@@ -2,10 +2,12 @@ from django.shortcuts import render
 from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from services import signup_service
-import requests
+from accounts.services.auth_service import register_user, SignupError
+from common.codeforces.client import CodeforcesAPIError
+import logging
 
-# Create your views here.
+logger = logging.getLogger(__name__)
+
 class RegisterSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=150)
     email = serializers.EmailField()
@@ -18,8 +20,13 @@ def register(request):
     serializer.is_valid(raise_exception=True)
     
     try:
-        user = signup_service.register_user(**serializer.validated_data)
-    except signup_service.SignupError as e: 
+        user = register_user(**serializer.validated_data)
+    except CodeforcesAPIError as e: 
+        logger.error("%s", e)
+        return Response({"detail": str(e)}, status=500)
+    except SignupError as e: 
+        logger.error("%s", e)
         return Response({"detail": str(e)}, status=400)
     
-    return Response({"id": user.id, "email": user.email}, status=201)
+    return Response({"id": user.id, "name": user.first_name, "email": user.email,
+                     "codeforces_handle": user.codeforces_handle}, status=201)

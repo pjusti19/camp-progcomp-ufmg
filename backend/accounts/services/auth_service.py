@@ -11,15 +11,15 @@ def register_user(*, name: str, codeforces_handle: str, email: str, password: st
     name = name.strip().lower()
     codeforces_handle = codeforces_handle.strip()
     password = password.strip()
-    
-    if not email or not name or not codeforces_handle or not password:
-        raise SignupError("Preencha todos os campos.")
-    
+
     if User.objects.filter(email=email).exists():
         raise SignupError("Email já cadastrado.")
+
+    if User.objects.filter(codeforces_handle=codeforces_handle).exists():
+        raise SignupError("Handle do Codeforces já cadastrado.")
     
     if not handle_exists(codeforces_handle):
-        raise SignupError("Handle do Codeforces inválido.")
+        raise SignupError("Handle do Codeforces não existe.")
     
     return User.objects.create_user(
         email = email,
