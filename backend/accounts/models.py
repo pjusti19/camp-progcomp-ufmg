@@ -29,5 +29,3 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ["codeforces_handle"]
     def __str__(self):
         return self.email or self.codeforces_handle
-
-

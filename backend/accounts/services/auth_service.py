@@ -21,9 +21,10 @@ def register_user(*, name: str, codeforces_handle: str, email: str, password: st
     if not handle_exists(codeforces_handle):
         raise SignupError("Handle do Codeforces não existe.")
     
-    return User.objects.create_user(
+    User.objects.create_user(
         email = email,
         first_name = name,
         codeforces_handle = codeforces_handle,
         password = password,
     )
+   
